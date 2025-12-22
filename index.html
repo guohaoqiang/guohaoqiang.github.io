@@ -14,7 +14,8 @@
     html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#111;background:var(--bg);}    
     .wrap{max-width:var(--maxw);margin:28px auto;padding:24px;display:grid;grid-template-columns:270px 1fr;gap:32px}
     header.brand{grid-column:1 / -1;display:flex;align-items:center;gap:20px}
-    .avatar{width:84px;height:84px;border-radius:6px;background:linear-gradient(135deg,#e6eefc,#cfe6ff);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;color:var(--accent);}
+  .avatar{width:84px;height:84px;border-radius:6px;background:linear-gradient(135deg,#e6eefc,#cfe6ff);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;color:var(--accent);overflow:hidden}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
     h1{margin:0;font-size:20px}
     .byline{color:var(--muted);margin-top:6px;font-size:13px}
 
@@ -48,8 +49,8 @@
 </head>
 <body>
   <div class="wrap">
-    <header class="brand">
-      <div class="avatar">YN</div>
+  <header class="brand">
+  <div class="avatar"><img src="/assets/avatar.jpg" alt="Haoqiang Guo"></div>
       <div>
         <h1>Haoqiang Guo</h1>
         <div class="byline">Software Engineer · Philomath · California</div>
@@ -61,12 +62,25 @@
         <li><a href="#overview">Overview</a></li>
         <!-- <li><a href="#papers">Papers</a></li> -->
         <!-- <li><a href="#talks">Talks</a></li> -->
-        <li><a href="#posts">Posts</a></li>
+        <!-- <li><a href="#posts">Posts</a></li>
         <li><a href="#projects">Projects</a></li>
-        <li><a href="#about">About</a></li>
+        <li><a href="#about">About</a></li> -->
         <li><a href="#contact">Contact</a></li>
       </ul>
-      <div class="tags">Last updated: December 6, 2025</div>
+      <div class="tags" id="last-updated">Last updated: <span id="last-updated-text">loading…</span></div>
+      <script>
+      (function(){
+        try{
+          const lm = document.lastModified;
+          if(!lm) return;
+          const d = new Date(lm);
+          const opts = { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit' };
+          const txt = d.toLocaleString(undefined, opts);
+          const el = document.getElementById('last-updated-text');
+          if(el) el.textContent = txt;
+        }catch(e){}
+      })();
+      </script>
     </nav>
 
     <main>
@@ -161,9 +175,9 @@
 
     </main>
 
-    <footer>
+    <!-- <footer>
       <div>© Your Name — <span class="muted">Simple static site — single-file HTML + CSS</span></div>
-    </footer>
+    </footer> -->
   </div>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
@@ -217,7 +231,7 @@
     document.addEventListener('DOMContentLoaded',()=>{
       // Reconstruct the email address client-side from a reversed string to avoid exposing it plainly in HTML.
       try{
-        const rev = 'hqguo1116@gmail.com'; // reversed 'you@example.com'
+        const rev = 'moc.liamg@6111ougqh'; // reversed 'hqguo1116@gmail.com'
         const email = rev.split('').reverse().join('');
         const a = document.getElementById('contact-email');
         if(a){
