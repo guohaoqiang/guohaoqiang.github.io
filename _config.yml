@@ -1,0 +1,37 @@
+# Site settings
+title: Tech Blog of Guo Haoqiang
+email: aHFndW8xMTE2QGdtYWlsLmNvbQ==
+description: >-
+  Write an awesome description for your new site here.
+  This will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+baseurl: "" # leave empty for user sites like username.github.io
+url: "https://guohaoqiang.github.io" # the base hostname & protocol
+
+# Social links (optional)
+github_username: guohaoqiang
+twitter_username:
+linkedin_username:
+
+# Build settings
+theme: minima
+plugins:
+  - jekyll-feed
+
+# Markdown & syntax highlighting
+markdown: kramdown
+highlighter: rouge
+
+# Permalink structure
+permalink: /:categories/:year/:month/:day/:title/
+
+# Pagination (optional, supported by GitHub Pages)
+paginate: 5
+paginate_path: "/page:num/"
+
+# Exclude files from build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
