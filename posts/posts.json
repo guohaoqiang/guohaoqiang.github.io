@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Example Markdown Post",
+    "date": "2025-12-21",
+    "slug": "posts_2025_12_06_example",
+    "excerpt": "This is an example technical blog post written in Markdown. The static generator will convert this into an HTML page."
+  },
+  {
+    "title": "Introductory Post",
+    "date": "2025-12-21",
+    "slug": "posts_2024_01_01_intro",
+    "excerpt": "Happy New Year! This is a sample older post."
+  }
+]
