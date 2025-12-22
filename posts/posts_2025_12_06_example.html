@@ -14,6 +14,7 @@
   <article>
     <h1>Example Markdown Post</h1>
     <div class="meta">2025-12-21</div>
+    <div id="post-reads" class="meta" style="color:#666;font-size:13px;margin-top:6px">Reads: <span id="reads-count">…</span></div>
     <div class="content"><h1>Example Markdown Post</h1>
 <p>This is an example technical blog post written in Markdown. The static generator will convert this into an HTML page.</p>
 <h2>Code example</h2>
@@ -27,5 +28,34 @@ print(np.arange(5))
 </ul></div>
   </article>
   <script>document.querySelectorAll('pre code').forEach((b)=>{try{hljs.highlightElement(b)}catch(e){}})</script>
+  <script>
+    // Increment and display read counter (and a referrer-specific counter) using CountAPI
+    (function(){
+      document.addEventListener('DOMContentLoaded', async ()=>{
+        const ns = 'hqguo_github_io';
+        const slug = (location.pathname.split('/').pop() || '').replace(/\.html$/,'');
+        const readsEl = document.getElementById('reads-count');
+        if(!slug) return;
+        try{
+          // increment main counter and use returned value to display
+          try{
+            const hitRes = await fetch(`https://api.countapi.xyz/hit/${ns}/${slug}`);
+            if(hitRes.ok){
+              const hitJson = await hitRes.json();
+              if(typeof hitJson.value !== 'undefined' && readsEl) readsEl.textContent = hitJson.value;
+            }
+          }catch(e){console.warn('count hit failed',e)}
+
+          // track referrer domain (or 'direct') — fire-and-forget
+          try{
+            let ref = 'direct';
+            if(document.referrer){ try{ ref = (new URL(document.referrer)).hostname.replace(/\./g,'-'); }catch(e){} }
+            fetch(`https://api.countapi.xyz/hit/${ns}/${slug}-ref-${ref}`).catch(()=>{});
+          }catch(e){}
+
+        }catch(e){console.warn('count logic failed',e)}
+      });
+    })();
+  </script>
 </body>
 </html>

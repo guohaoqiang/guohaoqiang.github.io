@@ -34,6 +34,7 @@
     .item{padding:10px;border-radius:8px}
     .item a{font-weight:600;color:var(--accent-2);text-decoration:none}
     .item p{margin:4px 0;color:var(--muted);font-size:14px}
+  .reads{font-size:12px;color:var(--muted);margin-left:8px}
 
     .tags{font-family:var(--mono);font-size:12px;color:var(--muted)}
 
@@ -223,6 +224,26 @@
         d.appendChild(a);
         const desc = document.createElement('p'); desc.className='muted'; desc.textContent = p.excerpt || '';
         d.appendChild(desc);
+        // placeholder for read counts
+        const reads = document.createElement('span'); reads.className = 'reads'; reads.textContent = '…';
+        // attach to title link area (after the link)
+        d.firstChild && d.firstChild.insertAdjacentElement('afterend', reads);
+        // fetch read counts from CountAPI (namespace sanitized)
+        (async()=>{
+          try{
+            const ns = 'hqguo_github_io';
+            const key = p.slug;
+            const r = await fetch(`https://api.countapi.xyz/get/${ns}/${key}`);
+            if(r.ok){
+              const j = await r.json();
+              const val = (typeof j.value !== 'undefined') ? j.value : 0;
+              reads.textContent = val + (val === 1 ? ' read' : ' reads');
+            }else{
+              // no key yet or error: show 0 reads
+              reads.textContent = '0 reads';
+            }
+          }catch(e){reads.textContent = ''}
+  })();
         listEl.appendChild(d);
       });
     }
