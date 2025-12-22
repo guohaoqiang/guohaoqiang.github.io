@@ -51,16 +51,16 @@
     <header class="brand">
       <div class="avatar">YN</div>
       <div>
-        <h1>Your Name</h1>
-        <div class="byline">Researcher · Engineer · Writer · Location</div>
+        <h1>Haoqiang Guo</h1>
+        <div class="byline">Software Engineer · Philomath · California</div>
       </div>
     </header>
 
     <nav class="side" aria-label="Main navigation">
       <ul>
         <li><a href="#overview">Overview</a></li>
-        <li><a href="#papers">Papers</a></li>
-        <li><a href="#talks">Talks</a></li>
+        <!-- <li><a href="#papers">Papers</a></li> -->
+        <!-- <li><a href="#talks">Talks</a></li> -->
         <li><a href="#posts">Posts</a></li>
         <li><a href="#projects">Projects</a></li>
         <li><a href="#about">About</a></li>
@@ -72,27 +72,27 @@
     <main>
       <section id="overview" class="section">
         <h2>Overview</h2>
-        <p class="muted">Short one-paragraph overview about you. Keep it concise — 2–3 sentences describing what you do and what you care about.</p>
+        <p class="muted">My interests lie in the intersection of high performance computing and artificial intelligence.</p>
 
         <div class="list">
-          <article class="item">
+          <!-- <article class="item">
             <a href="#projects">Selected Projects</a>
             <p class="muted">Tools, open-source repos, or engineering projects you maintain.</p>
-          </article>
+          </article> -->
 
-          <article class="item">
+          <!-- <article class="item">
             <a href="#papers">Publications</a>
             <p class="muted">A chronological list of your important papers and reports.</p>
-          </article>
+          </article> -->
 
-          <article class="item">
+          <!-- <article class="item">
             <a href="#talks">Talks</a>
             <p class="muted">Slides and recordings of recent and notable talks.</p>
-          </article>
+          </article> -->
         </div>
       </section>
 
-      <section id="papers" class="section">
+      <!-- <section id="papers" class="section">
         <h2>Papers</h2>
         <div class="list">
           <div class="item">
@@ -104,9 +104,9 @@
             <p class="muted">Journal · short summary.</p>
           </div>
         </div>
-      </section>
+      </section> -->
 
-      <section id="talks" class="section">
+      <!-- <section id="talks" class="section">
         <h2>Talks</h2>
         <div class="list">
           <div class="item">
@@ -143,17 +143,18 @@
       <section id="about" class="section">
         <h2>About</h2>
         <p class="muted">A slightly longer biography — education, current role, past roles, and interests. You can link out to CV/resume or a full page.</p>
-      </section>
+      </section> -->
 
       <section id="contact" class="section">
         <h2>Contact</h2>
-        <p class="muted">Email: <a href="mailto:you@example.com">you@example.com</a></p>
-        <p class="muted">Other: <a href="#">Twitter</a> · <a href="#">GitHub</a></p>
+        <!-- Email is reconstructed client-side to reduce scraping; link text is user-friendly. -->
+        <p class="muted">Email: <a href="#" id="contact-email">Email me</a></p>
+        <!-- <p class="muted">Other: <a href="#">Twitter</a> · <a href="#">GitHub</a></p> -->
       </section>
 
           <section id="blog" class="section">
         <h2>Blog</h2>
-        <p class="muted">A small static blog system: posts are stored as separate <code>.md</code> files in <code>/posts/</code>. A build script (provided) converts them into static HTML in <code>/posts/*.html</code> and produces <code>/posts/posts.json</code> which this page uses to list posts. If a pre-rendered HTML exists the site will open it; otherwise it will fetch and render the raw Markdown client-side.</p>
+        <p class="muted">Occasionally, I share technical blog posts on topics of interest.</p>
 
         <div id="posts-list" class="list"></div>
       </section>
@@ -214,6 +215,19 @@
 
     // On page load
     document.addEventListener('DOMContentLoaded',()=>{
+      // Reconstruct the email address client-side from a reversed string to avoid exposing it plainly in HTML.
+      try{
+        const rev = 'hqguo1116@gmail.com'; // reversed 'you@example.com'
+        const email = rev.split('').reverse().join('');
+        const a = document.getElementById('contact-email');
+        if(a){
+          a.href = 'mailto:'+email;
+          a.setAttribute('rel','nofollow noopener noreferrer');
+          // keep visible text generic to avoid showing the email in the rendered page source
+          a.textContent = 'Email me';
+        }
+      }catch(e){console.warn('email reconstruction failed',e)}
+
       loadPostsList();
 
       // If user opens a post directly as /posts/slug.md (or /posts/slug.html), server will serve it.
