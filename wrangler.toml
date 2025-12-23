@@ -1,0 +1,24 @@
+# Wrangler configuration for Cloudflare Worker that protects /admin.html
+# Do NOT put secrets here. Set ADMIN_TOKEN and ORIGIN in Cloudflare dashboard (Workers -> Variables/Secrets).
+# Replace <ACCOUNT_ID> with your Cloudflare account ID when you run `wrangler publish`.
+
+name = "admin-proxy"
+main = "cloudflare-worker/worker-rs256-fixed.js"
+compatibility_date = "2025-12-21"
+type = "javascript"
+
+# Optional: specify your account id here or provide it to wrangler via CLI
+account_id = "7ed5db77a991f01677e08d93fd670e1c"
+
+# Example of a route configuration (optional):
+# If you want the worker to run on your domain path (recommended), configure a route like:
+# [routes]
+# pattern = "example.com/admin*"
+
+# Deployment:
+# 1. Install Wrangler: https://developers.cloudflare.com/workers/cli-wrangler/install/
+# 2. Authenticate: `wrangler login`
+# 3. Set environment variables / secrets:
+#    wrangler secret put ADMIN_TOKEN
+#    (set ORIGIN in the Workers dashboard or via wrangler variables)
+# 4. Publish: `wrangler publish`
