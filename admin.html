@@ -21,13 +21,13 @@
   <p class="muted">This page shows per-post read counts (from CountAPI) and lets you query referrer counts per post. For top-referrers you can provide a comma-separated list of hostnames to scan.</p>
 
   <div>
-    Namespace: <strong id="ns">hqguo_github_io</strong>
+    Namespace: <strong id="ns">guohaoqiang_github_io</strong>
   </div>
 
   <div style="margin-top:12px">
-    <label class="small">Referrer scan (comma-separated hostnames):</label>
-    <input id="ref-scan" type="text" placeholder="e.g. google.com, twitter.com, reddit.com">
-    <button id="scan-all">Scan for all posts</button>
+  <label class="small">Referrer scan (comma-separated hostnames):</label>
+  <input id="ref-scan" type="text" placeholder="e.g. google.com, twitter.com, reddit.com">
+  <button id="scan-all" disabled>Scan for all posts</button>
   </div>
 
   <table id="posts-table">
@@ -57,7 +57,7 @@
       const posts = await fetchJSON('/posts/posts.json') || [];
       const tbody = document.querySelector('#posts-table tbody'); tbody.innerHTML='';
       const ns = document.getElementById('ns').textContent.trim();
-      for(const p of posts){
+    for(const p of posts){
         const tr = document.createElement('tr');
         const titleTd = document.createElement('td'); titleTd.textContent = p.title; tr.appendChild(titleTd);
         const dateTd = document.createElement('td'); dateTd.textContent = p.date; tr.appendChild(dateTd);
@@ -81,39 +81,56 @@
 
         // load total reads
         (async()=>{
-          readsTd.classList.add('loader');
-          const v = await fetchCount(ns,p.slug);
-          readsTd.classList.remove('loader');
-          readsTd.textContent = v + (v===1 ? ' read' : ' reads');
-        })();
-      }
-    }
-
-    // scan provided referrers across all posts and show sorted top referrers per post
-    document.getElementById('scan-all').addEventListener('click', async ()=>{
-      const txt = document.getElementById('ref-scan').value.trim();
-      if(!txt){ alert('Enter comma-separated hostnames to scan.'); return }
-      const hosts = txt.split(',').map(s=>s.trim()).filter(Boolean);
-      const posts = await fetchJSON('/posts/posts.json') || [];
-      const ns = document.getElementById('ns').textContent.trim();
-      for(const p of posts){
-        const results = [];
-        for(const h of hosts){
-          const v = await fetchCount(ns, slugToRefKey(p.slug,h));
-          results.push({host:h,count:v});
+              readsTd.classList.add('loader');
+              const v = await fetchCount(ns,p.slug);
+              readsTd.classList.remove('loader');
+              readsTd.textContent = v + (v===1 ? ' read' : ' reads');
+            })();
+          }
+          // enable scan button now that table has been built
+          try{ const btn = document.getElementById('scan-all'); if(btn) btn.disabled = false }catch(e){}
         }
-        results.sort((a,b)=>b.count-a.count);
-        // find the refTd for this post and display
-        const rows = Array.from(document.querySelectorAll('#posts-table tbody tr'));
-        const row = rows.find(r=>r.children[0].textContent === p.title);
-        if(row){
-          const show = row.children[3].querySelector('.muted');
-          show.textContent = results.map(r=>`${r.host}: ${r.count}`).join(' · ');
-        }
-      }
-    });
 
-    buildTable();
+        // scan provided referrers across all posts and show sorted top referrers per post
+        document.getElementById('scan-all').addEventListener('click', async ()=>{
+          try{
+            const txt = document.getElementById('ref-scan').value.trim();
+            if(!txt){ alert('Enter comma-separated hostnames to scan.'); return }
+            const hosts = txt.split(',').map(s=>s.trim()).filter(Boolean);
+            const posts = await fetchJSON('/posts/posts.json') || [];
+            const ns = document.getElementById('ns').textContent.trim();
+
+            for(const p of posts){
+              // find the row and the show element (create if missing)
+              const rows = Array.from(document.querySelectorAll('#posts-table tbody tr'));
+              const row = rows.find(r=>r.children[0].textContent === p.title);
+              let show = null;
+              if(row){
+                show = row.children[3].querySelector('.muted');
+                if(!show){
+                  show = document.createElement('div');
+                  show.className = 'muted';
+                  show.style.marginTop = '6px';
+                  row.children[3].appendChild(show);
+                }
+                show.textContent = 'checking…';
+              }
+
+              // fetch all hosts in parallel for this post
+              const promises = hosts.map(h =>
+                fetchCount(ns, slugToRefKey(p.slug, h)).then(v => ({host: h, count: v})).catch(() => ({host: h, count: 0}))
+              );
+              const results = await Promise.all(promises);
+              results.sort((a,b)=>b.count-a.count);
+
+              if(show){
+                show.textContent = results.map(r=>`${r.host}: ${r.count}`).join(' · ');
+              }
+            }
+          }catch(e){ console.error('Scan failed',e); alert('Scan failed — see console for details') }
+        });
+
+        buildTable();
   </script>
 </body>
 </html>
