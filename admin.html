@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Post reads & referrers</title>
+  <style>
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;margin:24px;max-width:960px}
+    table{width:100%;border-collapse:collapse;margin-top:16px}
+    th,td{padding:8px 10px;border-bottom:1px solid #eee;text-align:left}
+    th{background:#fafafa}
+    .muted{color:#666;font-size:13px}
+    .small{font-size:13px}
+    input[type=text]{width:260px;padding:6px}
+    button{padding:6px 10px;margin-left:6px}
+    .loader{opacity:0.6}
+  </style>
+</head>
+<body>
+  <h1>Admin — Post reads & referrers</h1>
+  <p class="muted">This page shows per-post read counts (from CountAPI) and lets you query referrer counts per post. For top-referrers you can provide a comma-separated list of hostnames to scan.</p>
+
+  <div>
+    Namespace: <strong id="ns">hqguo_github_io</strong>
+  </div>
+
+  <div style="margin-top:12px">
+    <label class="small">Referrer scan (comma-separated hostnames):</label>
+    <input id="ref-scan" type="text" placeholder="e.g. google.com, twitter.com, reddit.com">
+    <button id="scan-all">Scan for all posts</button>
+  </div>
+
+  <table id="posts-table">
+    <thead>
+      <tr><th>Post</th><th>Date</th><th>Total reads</th><th>Referrer check</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function fetchJSON(url){
+      try{ const r = await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); }catch(e){console.warn('fetch failed',url,e); return null }
+    }
+
+    async function fetchCount(ns,key){
+      try{
+        const r = await fetch(`https://api.countapi.xyz/get/${ns}/${key}`);
+        if(!r.ok) return 0;
+        const j = await r.json();
+        return typeof j.value !== 'undefined' ? j.value : 0;
+      }catch(e){return 0}
+    }
+
+    function slugToRefKey(slug,host){ return `${slug}-ref-${host.replace(/\./g,'-')}` }
+
+    async function buildTable(){
+      const posts = await fetchJSON('/posts/posts.json') || [];
+      const tbody = document.querySelector('#posts-table tbody'); tbody.innerHTML='';
+      const ns = document.getElementById('ns').textContent.trim();
+      for(const p of posts){
+        const tr = document.createElement('tr');
+        const titleTd = document.createElement('td'); titleTd.textContent = p.title; tr.appendChild(titleTd);
+        const dateTd = document.createElement('td'); dateTd.textContent = p.date; tr.appendChild(dateTd);
+        const readsTd = document.createElement('td'); readsTd.textContent = '…'; tr.appendChild(readsTd);
+
+        const refTd = document.createElement('td');
+        const input = document.createElement('input'); input.type='text'; input.placeholder='referrer host e.g. google.com'; input.className='small';
+        const btn = document.createElement('button'); btn.textContent='Check';
+        const show = document.createElement('div'); show.className='muted'; show.style.marginTop='6px';
+        btn.onclick = async ()=>{
+          const host = input.value.trim(); if(!host){ show.textContent='Enter a hostname to check'; return }
+          show.textContent = 'checking…';
+          const key = slugToRefKey(p.slug,host);
+          const v = await fetchCount(ns,key);
+          show.textContent = `${host}: ${v}`;
+        };
+        refTd.appendChild(input); refTd.appendChild(btn); refTd.appendChild(show);
+        tr.appendChild(refTd);
+
+        tbody.appendChild(tr);
+
+        // load total reads
+        (async()=>{
+          readsTd.classList.add('loader');
+          const v = await fetchCount(ns,p.slug);
+          readsTd.classList.remove('loader');
+          readsTd.textContent = v + (v===1 ? ' read' : ' reads');
+        })();
+      }
+    }
+
+    // scan provided referrers across all posts and show sorted top referrers per post
+    document.getElementById('scan-all').addEventListener('click', async ()=>{
+      const txt = document.getElementById('ref-scan').value.trim();
+      if(!txt){ alert('Enter comma-separated hostnames to scan.'); return }
+      const hosts = txt.split(',').map(s=>s.trim()).filter(Boolean);
+      const posts = await fetchJSON('/posts/posts.json') || [];
+      const ns = document.getElementById('ns').textContent.trim();
+      for(const p of posts){
+        const results = [];
+        for(const h of hosts){
+          const v = await fetchCount(ns, slugToRefKey(p.slug,h));
+          results.push({host:h,count:v});
+        }
+        results.sort((a,b)=>b.count-a.count);
+        // find the refTd for this post and display
+        const rows = Array.from(document.querySelectorAll('#posts-table tbody tr'));
+        const row = rows.find(r=>r.children[0].textContent === p.title);
+        if(row){
+          const show = row.children[3].querySelector('.muted');
+          show.textContent = results.map(r=>`${r.host}: ${r.count}`).join(' · ');
+        }
+      }
+    });
+
+    buildTable();
+  </script>
+</body>
+</html>
