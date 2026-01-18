@@ -31,7 +31,7 @@ async function sendEmail(to, subject, html, env) {
   }
 
   try {
-    const fromEmail = 'hqguo1116@gmail.com'; // Your verified sender email
+    const fromEmail = 'hectorlannister@gmail.com'; // Your verified sender email
     
     const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',

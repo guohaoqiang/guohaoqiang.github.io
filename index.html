@@ -360,14 +360,8 @@
       // Cloudflare Worker endpoint
       const WORKER_URL = 'https://avatar-verify.9ohnny.workers.dev'; // Replace with your worker domain
 
-      // Check if user already verified (localStorage)
-      const verifiedEmail = localStorage.getItem('avatar-verified-email');
-      if (verifiedEmail) {
-        trigger.style.cursor = 'default';
-        trigger.classList.remove('avatar-blur');
-      } else {
-        trigger.addEventListener('click', openModal);
-      }
+      // Always show the avatar as blurred - require verification each time
+      trigger.addEventListener('click', openModal);
 
       function openModal() {
         modal.classList.add('active');
@@ -420,7 +414,7 @@
             return;
           }
 
-          showMessage('Code sent! Check your email.', 'success');
+          showMessage('Code sent! Check your email inbox (or spam folder). The code expires in 10 minutes.', 'success');
           stepEmail.style.display = 'none';
           stepCode.style.display = 'block';
           codeInput.focus();
@@ -461,11 +455,13 @@
           }
 
           showMessage('✓ Email verified! Avatar unlocked.', 'success');
-          localStorage.setItem('avatar-verified-email', email);
 
-          // Remove blur effect
+          // Remove blur effect temporarily (only for this session)
           trigger.classList.remove('avatar-blur');
           trigger.style.cursor = 'default';
+          
+          // Remove the click listener so they can't click again during this session
+          trigger.removeEventListener('click', openModal);
 
           setTimeout(() => {
             closeModal();
