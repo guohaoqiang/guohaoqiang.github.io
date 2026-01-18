@@ -1,14 +1,14 @@
 [
   {
-    "title": "Introductory Post",
-    "date": "2026-01-17",
-    "slug": "posts_2024_01_01_intro",
-    "excerpt": "Happy New Year! This is a sample older post."
-  },
-  {
-    "title": "Terms Frequently Seen in LLM inference",
+    "title": "LLM Inference Terminology",
     "date": "2026-01-17",
     "slug": "Terms_in_LLM",
-    "excerpt": "## Model"
+    "excerpt": "A reference guide for fundamental terms used in designing and analyzing LLM inference engines."
+  },
+  {
+    "title": "AI Accelerators: Meta MTIA, NVIDIA, and AMD",
+    "date": "2026-01-17",
+    "slug": "Meta_MTIA_NV_AMD",
+    "excerpt": "A comparison of modern AI accelerators and their design philosophies."
   }
 ]
