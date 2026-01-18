@@ -39,6 +39,15 @@ TEMPLATE = '''<!doctype html>
     <div class="content">{content}</div>
   </article>
   <script>document.querySelectorAll('pre code').forEach((b)=>{{try{{hljs.highlightElement(b)}}catch(e){{}}}})</script>
+  <script>
+    // Track page views with CountAPI
+    (function() {{
+      const ns = 'guohaoqiang_github_io';
+      const slug = '{slug}';
+      const url = `https://api.countapi.xyz/hit/${{ns}}/${{slug}}`;
+      fetch(url).catch(e => console.warn('CountAPI tracking failed', e));
+    }})();
+  </script>
 </body>
 </html>'''
 
@@ -92,7 +101,7 @@ def build():
         title, date, excerpt = parse_md_metadata(text, fname)
         slug = os.path.splitext(fname)[0]
         html = md.convert(text)
-        out_html = TEMPLATE.format(title=title, date=date, content=html)
+        out_html = TEMPLATE.format(title=title, date=date, content=html, slug=slug)
         out_path = os.path.join(OUT_DIR, slug + '.html')
         with open(out_path, 'w', encoding='utf-8') as f:
             f.write(out_html)

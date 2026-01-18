@@ -80,5 +80,14 @@
 </ul></div>
   </article>
   <script>document.querySelectorAll('pre code').forEach((b)=>{try{hljs.highlightElement(b)}catch(e){}})</script>
+  <script>
+    // Track page views with CountAPI
+    (function() {
+      const ns = 'guohaoqiang_github_io';
+      const slug = 'Terms_in_LLM';
+      const url = `https://api.countapi.xyz/hit/${ns}/${slug}`;
+      fetch(url).catch(e => console.warn('CountAPI tracking failed', e));
+    })();
+  </script>
 </body>
 </html>
