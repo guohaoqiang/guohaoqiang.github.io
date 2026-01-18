@@ -1,9 +1,9 @@
 [
   {
-    "title": "Example Markdown Post",
-    "date": "2025-12-21",
-    "slug": "posts_2025_12_06_example",
-    "excerpt": "This is an example technical blog post written in Markdown. The static generator will convert this into an HTML page."
+    "title": "Terms in LLM",
+    "date": "2026-01-17",
+    "slug": "Terms_in_LLM",
+    "excerpt": "A collection of terms frequently seen in LLM inference, including definitions for Time-To-First-Token, Time-Per-Output-Token, and Time Between Tokens."
   },
   {
     "title": "Introductory Post",
