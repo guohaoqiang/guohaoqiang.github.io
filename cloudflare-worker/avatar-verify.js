@@ -9,8 +9,8 @@ function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-async function sendEmail(to, subject, html) {
-  const SENDGRID_API_KEY = SENDGRID_KEY; // Configured as environment secret
+async function sendEmail(to, subject, html, env) {
+  const SENDGRID_API_KEY = env.SENDGRID_KEY;
   
   if (!SENDGRID_API_KEY) {
     console.error('SENDGRID_KEY not configured');
@@ -48,7 +48,7 @@ async function sendEmail(to, subject, html) {
   }
 }
 
-async function handleRequest(request) {
+async function handleRequest(request, env) {
   // CORS headers
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -99,7 +99,7 @@ async function handleRequest(request) {
         <p>If you didn't request this, you can safely ignore this email.</p>
       `;
 
-      const emailSent = await sendEmail(email, 'Your Avatar Access Code', userEmailHtml);
+      const emailSent = await sendEmail(email, 'Your Avatar Access Code', userEmailHtml, env);
 
       if (!emailSent) {
         return new Response(JSON.stringify({ error: 'Failed to send email' }), {
@@ -153,7 +153,7 @@ async function handleRequest(request) {
         <p><strong>Time:</strong> ${new Date().toISOString()}</p>
       `;
 
-      await sendEmail('hqguo1116@gmail.com', 'Avatar Access Request', adminEmailHtml);
+      await sendEmail('hqguo1116@gmail.com', 'Avatar Access Request', adminEmailHtml, env);
 
       return new Response(JSON.stringify({ success: true, message: 'Verified' }), {
         status: 200,
@@ -175,5 +175,5 @@ async function handleRequest(request) {
 }
 
 export default {
-  fetch: handleRequest,
+  fetch: (request, env) => handleRequest(request, env),
 };
