@@ -19,28 +19,63 @@
 <h2>Model Components</h2>
 <ul>
 <li>
-<p><strong>Prefill</strong>: The phase where the model processes the entire input prompt in parallel. The model reads all prompt tokens at once and generates key-value (KV) caches, preparing for the decode phase. This phase is throughput-optimized.</p>
+<p><strong>Prefill</strong>: </p>
+<blockquote>
+<blockquote>
+<p>The phase where the model processes the entire input prompt in parallel. The model reads all prompt tokens at once and generates key-value (KV) caches, preparing for the decode phase. This phase is throughput-optimized.</p>
+</blockquote>
+</blockquote>
 </li>
 <li>
-<p><strong>Decode</strong>: The phase where the model generates output tokens one at a time (autoregressive), using previously computed KV caches. Each decode step takes the previously generated token and predicts the next one. This phase is latency-sensitive.</p>
+<p><strong>Decode</strong>: </p>
+<blockquote>
+<blockquote>
+<p>The phase where the model generates output tokens one at a time (autoregressive), using previously computed KV caches. Each decode step takes the previously generated token and predicts the next one. This phase is latency-sensitive.</p>
+</blockquote>
+</blockquote>
 </li>
 </ul>
 <h2>System Metrics</h2>
 <ul>
 <li>
-<p><strong>Time-To-First-Token (<a href="https://arxiv.org/pdf/2407.07000">TTFT</a>)</strong>: The latency between request arrival and the generation of the first output token. It encompasses scheduling delay (time from arrival to prompt processing start) and prompt processing time (prefill phase). Critical for perceived responsiveness.</p>
+<p><strong>Time-To-First-Token (<a href="https://arxiv.org/pdf/2407.07000">TTFT</a>)</strong>: </p>
+<blockquote>
+<blockquote>
+<p>The latency between request arrival and the generation of the first output token. It encompasses scheduling delay (time from arrival to prompt processing start) and prompt processing time (prefill phase). Critical for perceived responsiveness.</p>
+</blockquote>
+</blockquote>
 </li>
 <li>
-<p><strong>Time-Per-Output-Token (<a href="https://arxiv.org/pdf/2407.07000">TPOT</a>)</strong>: The average time taken to generate each output token, calculated as Total Decode Time / Number of Tokens. Measures the throughput efficiency of the decode phase and impacts user experience for long-form generation.</p>
+<p><strong>Time-Per-Output-Token (<a href="https://arxiv.org/pdf/2407.07000">TPOT</a>)</strong>: </p>
+<blockquote>
+<blockquote>
+<p>The average time taken to generate each output token, calculated as Total Decode Time / Number of Tokens. Measures the throughput efficiency of the decode phase and impacts user experience for long-form generation.</p>
+</blockquote>
+</blockquote>
 </li>
 <li>
-<p><strong>Time Between Tokens (<a href="https://arxiv.org/pdf/2407.07000">TBT</a>)</strong>: The exact time interval between consecutive output tokens. Used to analyze consistency and smoothness of text generation, identifying potential bottlenecks or variable latencies during decoding.</p>
+<p><strong>Time Between Tokens (<a href="https://arxiv.org/pdf/2407.07000">TBT</a>)</strong>: </p>
+<blockquote>
+<blockquote>
+<p>The exact time interval between consecutive output tokens. Used to analyze consistency and smoothness of text generation, identifying potential bottlenecks or variable latencies during decoding.</p>
+</blockquote>
+</blockquote>
 </li>
 <li>
-<p><strong>Inter-token Latency (ITL)</strong>: The time between consecutive tokens, equivalent to TPOT. Referenced by <a href="https://docs.nvidia.com/nim/benchmarking/llm/latest/metrics.html">NVIDIA NIM</a>, <a href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/libraries/nxd-inference/developer_guides/llm-inference-benchmarking-guide.html">AWS Neuron</a>, and <a href="https://docs.vllm.ai/en/stable/design/metrics/#interval-calculations-vs-preemptions">vLLM</a> benchmarking tools. </p>
+<p><strong>Inter-token Latency (ITL)</strong>: </p>
+<blockquote>
+<blockquote>
+<p>The time between consecutive tokens, equivalent to TPOT. Referenced by <a href="https://docs.nvidia.com/nim/benchmarking/llm/latest/metrics.html">NVIDIA NIM</a>, <a href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/libraries/nxd-inference/developer_guides/llm-inference-benchmarking-guide.html">AWS Neuron</a>, and <a href="https://docs.vllm.ai/en/stable/design/metrics/#interval-calculations-vs-preemptions">vLLM</a> benchmarking tools. </p>
+</blockquote>
+</blockquote>
 </li>
 <li>
-<p><strong>Service Level Objective (<a href="https://arxiv.org/pdf/2410.14257">SLO</a>)</strong>: Measurable performance targets defining acceptable thresholds for latency, availability, and quality. For LLM systems, includes metrics like TTFT for prompt processing, TPOT for token generation, error rates (timeouts, schema violations), and content quality benchmarks. SLOs balance speed with accuracy across different inference stages. </p>
+<p><strong>Service Level Objective (<a href="https://arxiv.org/pdf/2410.14257">SLO</a>)</strong>: </p>
+<blockquote>
+<blockquote>
+<p>Measurable performance targets defining acceptable thresholds for latency, availability, and quality. For LLM systems, includes metrics like TTFT for prompt processing, TPOT for token generation, error rates (timeouts, schema violations), and content quality benchmarks. SLOs balance speed with accuracy across different inference stages. </p>
+</blockquote>
+</blockquote>
 </li>
 </ul></div>
   </article>
