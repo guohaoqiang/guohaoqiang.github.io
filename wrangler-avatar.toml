@@ -1,0 +1,15 @@
+# Wrangler configuration for Avatar Verification Worker
+# This worker handles email verification for avatar access
+
+name = "avatar-verify"
+main = "cloudflare-worker/avatar-verify.js"
+compatibility_date = "2025-12-21"
+workers_dev = true
+
+account_id = "7ed5db77a991f01677e08d93fd670e1c"
+
+
+# Deployment:
+# 1. Ensure SENDGRID_KEY secret is set:
+#    wrangler secret put SENDGRID_KEY
+# 2. Publish: `wrangler publish --config wrangler-avatar.toml`
