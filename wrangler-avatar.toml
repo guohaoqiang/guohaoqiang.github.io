@@ -8,8 +8,14 @@ workers_dev = true
 
 account_id = "7ed5db77a991f01677e08d93fd670e1c"
 
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+[env.production.secrets]
+# Secrets are set via: wrangler secret put SENDGRID_KEY
+SENDGRID_KEY = "SENDGRID_KEY"
 
 # Deployment:
 # 1. Ensure SENDGRID_KEY secret is set:
 #    wrangler secret put SENDGRID_KEY
-# 2. Publish: `wrangler publish --config wrangler-avatar.toml`
+# 2. Deploy: `wrangler deploy --config wrangler-avatar.toml`

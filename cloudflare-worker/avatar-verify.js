@@ -18,6 +18,8 @@ async function sendEmail(to, subject, html, env) {
   }
 
   try {
+    const fromEmail = 'noreply@sendgrid.net'; // Use SendGrid's default verified sender
+    
     const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
       headers: {
@@ -31,7 +33,7 @@ async function sendEmail(to, subject, html, env) {
             subject: subject,
           },
         ],
-        from: { email: 'noreply@hqguo.dev' }, // Replace with your domain
+        from: { email: fromEmail },
         content: [
           {
             type: 'text/html',
@@ -41,7 +43,13 @@ async function sendEmail(to, subject, html, env) {
       }),
     });
 
-    return response.ok;
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('SendGrid API error:', response.status, errText);
+      return false;
+    }
+
+    return true;
   } catch (err) {
     console.error('SendGrid error:', err);
     return false;
