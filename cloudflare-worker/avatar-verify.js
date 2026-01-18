@@ -10,15 +10,28 @@ function generateCode() {
 }
 
 async function sendEmail(to, subject, html, env) {
-  const SENDGRID_API_KEY = env.SENDGRID_KEY;
+  // Try to get SENDGRID_KEY from env - it should be injected as a secret
+  let SENDGRID_API_KEY = env.SENDGRID_KEY;
+  
+  console.log('sendEmail called:', { to, env_keys: Object.keys(env) });
+  console.log('SENDGRID_KEY value:', SENDGRID_API_KEY);
   
   if (!SENDGRID_API_KEY) {
-    console.error('SENDGRID_KEY not configured');
+    // If not found, check if it's stored under a different name
+    const keys = Object.keys(env);
+    if (keys.length > 0) {
+      SENDGRID_API_KEY = env[keys[0]]; // Use the first available key
+      console.log('Using key:', keys[0]);
+    }
+  }
+  
+  if (!SENDGRID_API_KEY) {
+    console.error('SENDGRID_KEY not configured. Available env:', Object.keys(env));
     return false;
   }
 
   try {
-    const fromEmail = 'noreply@sendgrid.net'; // Use SendGrid's default verified sender
+    const fromEmail = 'hqguo1116@gmail.com'; // Your verified sender email
     
     const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
