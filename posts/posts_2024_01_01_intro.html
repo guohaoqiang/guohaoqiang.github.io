@@ -13,8 +13,7 @@
 <body>
   <article>
     <h1>Introductory Post</h1>
-    <div class="meta">2025-12-21</div>
-    <div id="post-reads" class="meta" style="color:#666;font-size:13px;margin-top:6px">Reads: <span id="reads-count">…</span></div>
+    <div class="meta">2026-01-17</div>
     <div class="content"><h1>Introductory Post</h1>
 <p>Happy New Year! This is a sample older post.</p>
 <pre><code class="language-bash"># a shell example
@@ -23,34 +22,5 @@ ls -la
 <p>Short excerpt text for the posts.json example.</p></div>
   </article>
   <script>document.querySelectorAll('pre code').forEach((b)=>{try{hljs.highlightElement(b)}catch(e){}})</script>
-  <script>
-    // Increment and display read counter (and a referrer-specific counter) using CountAPI
-    (function(){
-      document.addEventListener('DOMContentLoaded', async ()=>{
-        const ns = 'hqguo_github_io';
-        const slug = (location.pathname.split('/').pop() || '').replace(/\.html$/,'');
-        const readsEl = document.getElementById('reads-count');
-        if(!slug) return;
-        try{
-          // increment main counter and use returned value to display
-          try{
-            const hitRes = await fetch(`https://api.countapi.xyz/hit/${ns}/${slug}`);
-            if(hitRes.ok){
-              const hitJson = await hitRes.json();
-              if(typeof hitJson.value !== 'undefined' && readsEl) readsEl.textContent = hitJson.value;
-            }
-          }catch(e){console.warn('count hit failed',e)}
-
-          // track referrer domain (or 'direct') — fire-and-forget
-          try{
-            let ref = 'direct';
-            if(document.referrer){ try{ ref = (new URL(document.referrer)).hostname.replace(/\./g,'-'); }catch(e){} }
-            fetch(`https://api.countapi.xyz/hit/${ns}/${slug}-ref-${ref}`).catch(()=>{});
-          }catch(e){}
-
-        }catch(e){console.warn('count logic failed',e)}
-      });
-    })();
-  </script>
 </body>
 </html>

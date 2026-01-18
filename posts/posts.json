@@ -1,14 +1,14 @@
 [
   {
-    "title": "Terms in LLM",
-    "date": "2026-01-17",
-    "slug": "Terms_in_LLM",
-    "excerpt": "A collection of terms frequently seen in LLM inference, including definitions for Time-To-First-Token, Time-Per-Output-Token, and Time Between Tokens."
-  },
-  {
     "title": "Introductory Post",
-    "date": "2025-12-21",
+    "date": "2026-01-17",
     "slug": "posts_2024_01_01_intro",
     "excerpt": "Happy New Year! This is a sample older post."
+  },
+  {
+    "title": "Terms Frequently Seen in LLM inference",
+    "date": "2026-01-17",
+    "slug": "Terms_in_LLM",
+    "excerpt": "## Model"
   }
 ]
