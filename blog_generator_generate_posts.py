@@ -55,11 +55,12 @@ TEMPLATE = '''<!doctype html>
       padding: 40px 20px;
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: center;
       border-bottom: 1px solid var(--border);
+      gap: 15px;
     }}
-    .header-left {{ display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text); }}
-    .avatar {{ width: 50px; height: 50px; border-radius: 6px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }}
+    .header-left {{ text-decoration: none; color: var(--text); }}
+    .avatar {{ width: 50px; height: 50px; border-radius: 6px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }}
     .avatar img {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
     .site-title {{ font-family: sans-serif; font-size: 24px; font-weight: 700; }}
     
@@ -161,8 +162,8 @@ TEMPLATE = '''<!doctype html>
 </head>
 <body>
   <header class="site-header">
+    <div class="avatar avatar-blur" id="avatar-trigger"><img src="/assets/avatar.jpg" alt="Haoqiang Guo"></div>
     <a href="/" class="header-left">
-      <div class="avatar avatar-blur" id="avatar-trigger"><img src="/assets/avatar.jpg" alt="Haoqiang Guo"></div>
       <span class="site-title">Haoqiang Guo</span>
     </a>
     <nav class="nav-links">
