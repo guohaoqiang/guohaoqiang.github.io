@@ -51,9 +51,9 @@ TEMPLATE = '''<!doctype html>
     }}
 
     .site-header {{
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 40px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -74,10 +74,10 @@ TEMPLATE = '''<!doctype html>
     .page-wrapper {{
       display: grid;
       grid-template-columns: 280px 1fr;
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
-      gap: 60px;
-      padding: 40px 20px;
+      gap: 80px;
+    #   padding: 40px 40px;
     }}
 
     .sidebar {{
@@ -105,7 +105,7 @@ TEMPLATE = '''<!doctype html>
     .toc ul ul li {{ margin-bottom: 6px; font-size: 0.95em; color: var(--gray); }}
 
     article {{
-      max-width: 1000px;
+      max-width: 1100px;
       width: 100%;
     }}
 
@@ -131,6 +131,7 @@ TEMPLATE = '''<!doctype html>
       border-radius: 6px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }}
+
 
     /* Back to Top Button */
     #backToTop {{
