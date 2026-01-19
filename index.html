@@ -244,7 +244,7 @@
       listEl.innerHTML = '';
       postsMeta.forEach(p=>{
         const d = document.createElement('div'); d.className='item';
-        const a = document.createElement('a'); a.href = '/posts/'+p.slug+'.html';
+        const a = document.createElement('a'); a.href = '/posts/'+p.slug+'/';
         a.textContent = p.title + ' — ' + p.date;
         d.appendChild(a);
         const desc = document.createElement('p'); desc.className='muted'; desc.textContent = p.excerpt || '';
