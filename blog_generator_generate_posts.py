@@ -497,8 +497,16 @@ def build():
         reading_time = calculate_reading_time(text)
         slug = os.path.splitext(fname)[0]
         
+        # 1. Strip the H1 Title
         body_text = re.sub(r'^# .*\n?', '', text, count=1, flags=re.MULTILINE)
 
+        # 2. REMOVE THE DUPLICATED EXCERPT:
+        # We find the first non-empty paragraph (the excerpt) and remove it from the body.
+        if excerpt:
+            # We escape the excerpt to handle special characters and remove it once
+            escaped_excerpt = re.escape(excerpt)
+            body_text = re.sub(escaped_excerpt, '', body_text, count=1).lstrip()
+        
         # Automatically inject [TOC] marker if not present to force ToC generation
         if '[TOC]' not in text:
             text = "[TOC]\n\n" + body_text
