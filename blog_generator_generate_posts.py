@@ -16,6 +16,7 @@ import json
 import re
 from datetime import datetime
 import markdown
+import urllib.parse
 
 POSTS_DIR = 'posts'
 OUT_DIR = 'posts'
@@ -43,6 +44,7 @@ TEMPLATE = '''<!doctype html>
       max-width: 820px;
       margin: 0 auto;
       padding: 40px 20px;
+      scroll-behavior: smooth;
     }}
 
     .site-header {{
@@ -54,11 +56,14 @@ TEMPLATE = '''<!doctype html>
       align-items: baseline;
       border-bottom: 1px solid var(--border);
     }}
-    .site-header a {{ text-decoration: none; color: var(--text); }}
+    .header-left {{ display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text); }}
+    .avatar {{ width: 50px; height: 50px; border-radius: 6px; object-fit: cover; }}
     .site-title {{ font-family: sans-serif; font-size: 24px; font-weight: 700; }}
-    .nav-links {{ font-family: sans-serif; font-size: 16px; }}
-    .nav-links a {{ margin-left: 20px; color: #666; }}
     
+    .nav-links {{ font-family: sans-serif; font-size: 16px; }}
+    .nav-links a {{ margin-left: 20px; color: #666; text-decoration: none; }}
+    .nav-links a:hover {{ color: var(--accent); }}
+
     h1, h2, h3 {{ font-family: -apple-system, sans-serif; margin-top: 1.6em; }}
     .meta {{ font-family: sans-serif; color: #666; font-size: 0.9em; margin-bottom: 20px; }}
     
@@ -92,14 +97,39 @@ TEMPLATE = '''<!doctype html>
       border-radius: 6px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }}
+
+    /* Back to Top Button */
+    #backToTop {{
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 45px;
+      height: 45px;
+      background: var(--text);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+      z-index: 1000;
+    }}
+    #backToTop:hover {{ opacity: 1; }}
   </style>
 </head>
 <body>
   <header class="site-header">
-    <a href="/" class="site-title">Haoqiang Guo</a>
+    <a href="/" class="header-left">
+      <img src="/assets/avatar.jpg" alt="Haoqiang Guo" class="avatar">
+      <span class="site-title">Haoqiang Guo</span>
+    </a>
     <nav class="nav-links">
       <a href="/#blog">Blog</a>
-      <a href="/#overview">About</a>
+      <a href="mailto:hqguo1116@gmail.com?subject=Question regarding: {title_encoded}">Contact</a>
     </nav>
   </header>
 
@@ -114,6 +144,8 @@ TEMPLATE = '''<!doctype html>
     </div>
   </article>
   
+  <button id="backToTop" title="Go to top">↑</button>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
   <script>hljs.highlightAll();</script>
 </body>
@@ -164,12 +196,13 @@ def build():
             text = "[TOC]\n\n" + body_text
             
         html = md.convert(text)
-        
+        title_encoded = urllib.parse.quote(title)
+
         # Create directory for Pretty URL
         post_dir = os.path.join(OUT_DIR, slug)
         os.makedirs(post_dir, exist_ok=True)
         
-        out_html = TEMPLATE.format(title=title, date=date, excerpt=excerpt, content=html, slug=slug)
+        out_html = TEMPLATE.format(title=title, title_encoded=title_encoded, date=date, excerpt=excerpt, content=html, slug=slug)
         
         with open(os.path.join(post_dir, 'index.html'), 'w', encoding='utf-8') as f:
             f.write(out_html)
