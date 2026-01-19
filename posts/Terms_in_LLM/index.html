@@ -192,6 +192,21 @@
   <button id="backToTop" title="Go to top">↑</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-  <script>hljs.highlightAll();</script>
+  <script>
+    hljs.highlightAll();
+
+    // BACK TO TOP LOGIC
+    const btt = document.getElementById("backToTop");
+    window.onscroll = function() {
+      if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+        btt.style.display = "flex";
+      } else {
+        btt.style.display = "none";
+      }
+    };
+    btt.onclick = function() {
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+  </script>
 </body>
 </html>

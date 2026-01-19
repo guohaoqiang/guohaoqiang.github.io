@@ -17,9 +17,11 @@ import re
 from datetime import datetime
 import markdown
 import urllib.parse
+from PIL import Image
 
 POSTS_DIR = 'posts'
 OUT_DIR = 'posts'
+ASSETS_DIR = 'assets'
 
 TEMPLATE = '''<!doctype html>
 <html lang="en">
@@ -147,7 +149,22 @@ TEMPLATE = '''<!doctype html>
   <button id="backToTop" title="Go to top">↑</button>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-  <script>hljs.highlightAll();</script>
+  <script>
+    hljs.highlightAll();
+
+    // BACK TO TOP LOGIC
+    const btt = document.getElementById("backToTop");
+    window.onscroll = function() {{
+      if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {{
+        btt.style.display = "flex";
+      }} else {{
+        btt.style.display = "none";
+      }}
+    }};
+    btt.onclick = function() {{
+      window.scrollTo({{top: 0, behavior: 'smooth'}});
+    }};
+  </script>
 </body>
 </html>'''
 
@@ -173,6 +190,24 @@ def parse_md_metadata(text, filename):
             
     return title, date, excerpt
 
+def optimize_assets():
+    """Optimizes JPG, PNG, and animated GIFs in the assets folder."""
+    if not os.path.exists(ASSETS_DIR): return
+    print("--- Optimizing Assets ---")
+    for filename in os.listdir(ASSETS_DIR):
+        path = os.path.join(ASSETS_DIR, filename)
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            try:
+                img = Image.open(path)
+                img.save(path, optimize=True, quality=85)
+                print(f"Optimized: {filename}")
+            except Exception as e: print(f"Error optimizing {filename}: {e}")
+        elif filename.lower().endswith('.gif'):
+            # This requires 'gifsicle' installed on your Mac Studio via brew
+            result = os.system(f"gifsicle -O3 --lossy=80 -i {path} -o {path}")
+            if result == 0: print(f"Optimized GIF: {filename}")
+            else: print(f"Skipped GIF optimization (gifsicle not found or error).")
+
 def build():
     posts = []
     # Added 'toc' and 'extra' for the features you requested
@@ -196,6 +231,11 @@ def build():
             text = "[TOC]\n\n" + body_text
             
         html = md.convert(text)
+
+        # LAZY LOADING OPTIMIZATION:
+        # Automatically inject loading="lazy" into all <img> tags
+        html = html.replace('<img ', '<img loading="lazy" ')
+
         title_encoded = urllib.parse.quote(title)
 
         # Create directory for Pretty URL
@@ -216,3 +256,5 @@ def build():
 
 if __name__=='__main__':
     build()
+    optimize_assets()
+    print("--- Build Complete ---")
