@@ -44,14 +44,13 @@ TEMPLATE = '''<!doctype html>
       font-family: "Charter", "Georgia", serif;
       line-height: 1.8;
       color: var(--text);
-      max-width: 820px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 0;
       scroll-behavior: smooth;
     }}
 
     .site-header {{
-      max-width: 1600px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 40px 40px;
       display: flex;
@@ -74,10 +73,10 @@ TEMPLATE = '''<!doctype html>
     .page-wrapper {{
       display: grid;
       grid-template-columns: 280px 1fr;
-      max-width: 1600px;
+      max-width: 1400px;
       margin: 0 auto;
-      gap: 80px;
-    #   padding: 40px 40px;
+      gap: 60px;
+      padding: 40px 40px;
     }}
 
     .sidebar {{
@@ -105,7 +104,7 @@ TEMPLATE = '''<!doctype html>
     .toc ul ul li {{ margin-bottom: 6px; font-size: 0.95em; color: var(--gray); }}
 
     article {{
-      max-width: 1100px;
+      max-width: 1000px;
       width: 100%;
     }}
 
