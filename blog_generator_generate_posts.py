@@ -221,7 +221,7 @@ TEMPLATE = '''<!doctype html>
     <main>
       <article>
         <h1>{title}</h1>
-        <div class="meta">Published on {date}</div>
+        <div class="meta">Published on {date} &bull; {reading_time} min read</div>
         <div class="excerpt">{excerpt}</div>
         <div class="content">
           {content}
