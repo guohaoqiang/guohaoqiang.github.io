@@ -14,6 +14,7 @@ Usage:
 import os
 import json
 import re
+import math
 from datetime import datetime
 import markdown
 import urllib.parse
@@ -473,6 +474,11 @@ def optimize_assets():
             if result == 0: print(f"Optimized GIF: {filename}")
             else: print(f"Skipped GIF optimization (gifsicle not found or error).")
 
+def calculate_reading_time(text):
+    """Calculates reading time based on word count."""
+    words = len(re.findall(r'\w+', text))
+    return max(1, math.ceil(words / 200))
+
 def build():
     posts = []
     # Added 'toc' and 'extra' for the features you requested
@@ -487,6 +493,7 @@ def build():
             text = f.read()
         
         title, date, excerpt = parse_md_metadata(text, fname)
+        reading_time = calculate_reading_time(text)
         slug = os.path.splitext(fname)[0]
         
         body_text = re.sub(r'^# .*\n?', '', text, count=1, flags=re.MULTILINE)
@@ -512,7 +519,7 @@ def build():
         post_dir = os.path.join(OUT_DIR, slug)
         os.makedirs(post_dir, exist_ok=True)
         
-        out_html = TEMPLATE.format(title=title, title_encoded=title_encoded, date=date, excerpt=excerpt, content=content_html, toc_content=toc_html, slug=slug)
+        out_html = TEMPLATE.format(title=title, title_encoded=title_encoded, date=date, reading_time=reading_time, excerpt=excerpt, content=content_html, toc_content=toc_html, slug=slug)
         
         with open(os.path.join(post_dir, 'index.html'), 'w', encoding='utf-8') as f:
             f.write(out_html)
