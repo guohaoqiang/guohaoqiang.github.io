@@ -96,12 +96,37 @@
       z-index: 1000;
     }
     #backToTop:hover { opacity: 1; }
+
+    /* Avatar verification modal */
+    .avatar-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:center}
+    .avatar-modal.active{display:flex}
+    .modal-content{background:white;padding:32px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.15);max-width:400px;width:90%}
+    .modal-content h3{margin:0 0 16px 0;color:var(--accent)}
+    .modal-content p{margin:0 0 16px 0;color:var(--text);font-size:14px}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;margin-bottom:6px;font-weight:600;font-size:13px;color:var(--accent)}
+    .form-group input{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;font-family:inherit}
+    .form-group input:focus{outline:none;border-color:#3498db;box-shadow:0 0 0 2px rgba(52,152,219,0.1)}
+    .btn{padding:10px 16px;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:14px}
+    .btn-primary{background:#3498db;color:white}
+    .btn-primary:hover{background:#2980b9}
+    .btn-primary:disabled{background:#ccc;cursor:not-allowed}
+    .modal-message{padding:12px;border-radius:6px;font-size:13px;margin-bottom:16px}
+    .modal-message.success{background:#e8f5e9;color:#2e7d32}
+    .modal-message.error{background:#ffebee;color:#c62828}
+    .modal-spinner{display:inline-block;width:12px;height:12px;border:2px solid #f3f3f3;border-top:2px solid #3498db;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:8px}
+    @keyframes spin{0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)}}
+
+    /* Blurred avatar overlay */
+    .avatar-blur{position:relative;cursor:pointer}
+    .avatar-blur img{position:relative;z-index:1}
+    .avatar-blur::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:inherit;filter:blur(8px);border-radius:6px;z-index:10}
   </style>
 </head>
 <body>
   <header class="site-header">
     <a href="/" class="header-left">
-      <img src="/assets/avatar.jpg" alt="Haoqiang Guo" class="avatar">
+      <div class="avatar avatar-blur" id="avatar-trigger"><img src="/assets/avatar.jpg" alt="Haoqiang Guo"></div>
       <span class="site-title">Haoqiang Guo</span>
     </a>
     <nav class="nav-links">
@@ -138,6 +163,32 @@
   
   <button id="backToTop" title="Go to top">↑</button>
 
+  <!-- Avatar Verification Modal -->
+  <div class="avatar-modal" id="avatar-modal">
+    <div class="modal-content">
+      <h3>Verify Email to View Full Avatar</h3>
+      <p>Enter your email to receive a verification code.</p>
+      <div id="modal-message"></div>
+
+      <div id="step-email">
+        <div class="form-group">
+          <label for="verify-email">Email Address</label>
+          <input type="email" id="verify-email" placeholder="your@email.com" />
+        </div>
+        <button class="btn btn-primary" id="btn-send-code">Send Verification Code</button>
+      </div>
+
+      <div id="step-code" style="display:none">
+        <div class="form-group">
+          <label for="verify-code">Verification Code</label>
+          <input type="text" id="verify-code" placeholder="000000" maxlength="6" />
+        </div>
+        <button class="btn btn-primary" id="btn-verify-code">Verify Code</button>
+        <p style="margin-top:12px;font-size:12px;color:#666"><a href="#" id="btn-back-to-email" style="color:#3498db">Use a different email</a></p>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
   <script>
     hljs.highlightAll();
@@ -154,6 +205,162 @@
     btt.onclick = function() {
       window.scrollTo({top: 0, behavior: 'smooth'});
     };
+  </script>
+
+  <!-- Avatar Verification Script -->
+  <script>
+    (function() {
+      const modal = document.getElementById('avatar-modal');
+      const trigger = document.getElementById('avatar-trigger');
+      const messageEl = document.getElementById('modal-message');
+      const emailInput = document.getElementById('verify-email');
+      const codeInput = document.getElementById('verify-code');
+      const btnSendCode = document.getElementById('btn-send-code');
+      const btnVerifyCode = document.getElementById('btn-verify-code');
+      const btnBackToEmail = document.getElementById('btn-back-to-email');
+      const stepEmail = document.getElementById('step-email');
+      const stepCode = document.getElementById('step-code');
+
+      // Cloudflare Worker endpoint
+      const WORKER_URL = 'https://avatar-verify.9ohnny.workers.dev';
+
+      // Always show the avatar as blurred - require verification each time
+      trigger.addEventListener('click', openModal);
+
+      function openModal() {
+        modal.classList.add('active');
+        emailInput.focus();
+      }
+
+      function closeModal() {
+        modal.classList.remove('active');
+        clearMessages();
+        stepEmail.style.display = 'block';
+        stepCode.style.display = 'none';
+        emailInput.value = '';
+        codeInput.value = '';
+      }
+
+      function showMessage(text, type = 'error') {
+        messageEl.textContent = text;
+        messageEl.className = `modal-message ${type}`;
+      }
+
+      function clearMessages() {
+        messageEl.textContent = '';
+        messageEl.className = 'modal-message';
+      }
+
+      async function sendCode() {
+        const email = emailInput.value.trim();
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showMessage('Please enter a valid email address', 'error');
+          return;
+        }
+
+        btnSendCode.disabled = true;
+        btnSendCode.innerHTML = '<span class="modal-spinner"></span>Sending...';
+        clearMessages();
+
+        try {
+          const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'request-code', email }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            showMessage(data.error || 'Failed to send code', 'error');
+            btnSendCode.disabled = false;
+            btnSendCode.textContent = 'Send Verification Code';
+            return;
+          }
+
+          showMessage('Code sent! Check your email inbox (or spam folder). The code expires in 10 minutes.', 'success');
+          stepEmail.style.display = 'none';
+          stepCode.style.display = 'block';
+          codeInput.focus();
+        } catch (err) {
+          showMessage('Network error: ' + err.message, 'error');
+          btnSendCode.disabled = false;
+          btnSendCode.textContent = 'Send Verification Code';
+        }
+      }
+
+      async function verifyCode() {
+        const email = emailInput.value.trim();
+        const code = codeInput.value.trim();
+
+        if (!code || code.length !== 6) {
+          showMessage('Please enter a 6-digit code', 'error');
+          return;
+        }
+
+        btnVerifyCode.disabled = true;
+        btnVerifyCode.innerHTML = '<span class="modal-spinner"></span>Verifying...';
+        clearMessages();
+
+        try {
+          const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'verify-code', email, code }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            showMessage(data.error || 'Verification failed', 'error');
+            btnVerifyCode.disabled = false;
+            btnVerifyCode.textContent = 'Verify Code';
+            return;
+          }
+
+          showMessage('✓ Email verified! Avatar unlocked.', 'success');
+
+          // Remove blur effect temporarily (only for this session)
+          trigger.classList.remove('avatar-blur');
+          trigger.style.cursor = 'default';
+          
+          // Remove the click listener so they can't click again during this session
+          trigger.removeEventListener('click', openModal);
+
+          setTimeout(() => {
+            closeModal();
+          }, 1500);
+        } catch (err) {
+          showMessage('Network error: ' + err.message, 'error');
+          btnVerifyCode.disabled = false;
+          btnVerifyCode.textContent = 'Verify Code';
+        }
+      }
+
+      // Event listeners
+      btnSendCode.addEventListener('click', sendCode);
+      btnVerifyCode.addEventListener('click', verifyCode);
+
+      emailInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendCode();
+      });
+
+      codeInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') verifyCode();
+      });
+
+      btnBackToEmail.addEventListener('click', (e) => {
+        e.preventDefault();
+        stepEmail.style.display = 'block';
+        stepCode.style.display = 'none';
+        emailInput.focus();
+        clearMessages();
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    })();
   </script>
 </body>
 </html>
