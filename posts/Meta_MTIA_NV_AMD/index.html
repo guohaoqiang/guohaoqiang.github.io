@@ -22,6 +22,21 @@
       margin: 0 auto;
       padding: 40px 20px;
     }
+
+    .site-header {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border);
+    }
+    .site-header a { text-decoration: none; color: var(--text); }
+    .site-title { font-family: sans-serif; font-size: 24px; font-weight: 700; }
+    .nav-links { font-family: sans-serif; font-size: 16px; }
+    .nav-links a { margin-left: 20px; color: #666; }
+    
     h1, h2, h3 { font-family: -apple-system, sans-serif; margin-top: 1.6em; }
     .meta { font-family: sans-serif; color: #666; font-size: 0.9em; margin-bottom: 20px; }
     
@@ -58,6 +73,14 @@
   </style>
 </head>
 <body>
+  <header class="site-header">
+    <a href="/" class="site-title">Haoqiang Guo</a>
+    <nav class="nav-links">
+      <a href="/#blog">Blog</a>
+      <a href="/#overview">About</a>
+    </nav>
+  </header>
+
   <article>
     <h1>AI Accelerators: Meta MTIA, NVIDIA, and AMD</h1>
     <div class="meta">Published on 2026-01-19</div>
@@ -67,15 +90,11 @@
     <div class="content">
       <div class="toc">
 <ul>
-<li><a href="#ai-accelerators-meta-mtia-nvidia-and-amd">AI Accelerators: Meta MTIA, NVIDIA, and AMD</a><ul>
 <li><a href="#meta-mtia-v2-artemis">Meta MTIA V2 Artemis</a></li>
 <li><a href="#nvidia-h100">NVIDIA H100</a></li>
 <li><a href="#amd-mi350">AMD MI350</a></li>
 </ul>
-</li>
-</ul>
 </div>
-<h1 id="ai-accelerators-meta-mtia-nvidia-and-amd">AI Accelerators: Meta MTIA, NVIDIA, and AMD</h1>
 <p>A comparison of modern AI accelerators and their design philosophies.</p>
 <h2 id="meta-mtia-v2-artemis">Meta MTIA V2 Artemis</h2>
 <p>Meta's MTIA (Meta Training and Inference Accelerator) <a href="https://dl.acm.org/doi/full/10.1145/3695053.3731409">V2</a> is designed for Meta's specific workloads, including recommendation systems and large language models. The Artemis variant focuses on inference efficiency.</p>

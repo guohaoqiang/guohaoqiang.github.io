@@ -44,6 +44,21 @@ TEMPLATE = '''<!doctype html>
       margin: 0 auto;
       padding: 40px 20px;
     }}
+
+    .site-header {{
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border);
+    }}
+    .site-header a {{ text-decoration: none; color: var(--text); }}
+    .site-title {{ font-family: sans-serif; font-size: 24px; font-weight: 700; }}
+    .nav-links {{ font-family: sans-serif; font-size: 16px; }}
+    .nav-links a {{ margin-left: 20px; color: #666; }}
+    
     h1, h2, h3 {{ font-family: -apple-system, sans-serif; margin-top: 1.6em; }}
     .meta {{ font-family: sans-serif; color: #666; font-size: 0.9em; margin-bottom: 20px; }}
     
@@ -80,6 +95,14 @@ TEMPLATE = '''<!doctype html>
   </style>
 </head>
 <body>
+  <header class="site-header">
+    <a href="/" class="site-title">Haoqiang Guo</a>
+    <nav class="nav-links">
+      <a href="/#blog">Blog</a>
+      <a href="/#overview">About</a>
+    </nav>
+  </header>
+
   <article>
     <h1>{title}</h1>
     <div class="meta">Published on {date}</div>
@@ -134,9 +157,11 @@ def build():
         title, date, excerpt = parse_md_metadata(text, fname)
         slug = os.path.splitext(fname)[0]
         
+        body_text = re.sub(r'^# .*\n?', '', text, count=1, flags=re.MULTILINE)
+
         # Automatically inject [TOC] marker if not present to force ToC generation
         if '[TOC]' not in text:
-            text = "[TOC]\n\n" + text
+            text = "[TOC]\n\n" + body_text
             
         html = md.convert(text)
         

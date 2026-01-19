@@ -22,6 +22,21 @@
       margin: 0 auto;
       padding: 40px 20px;
     }
+
+    .site-header {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border);
+    }
+    .site-header a { text-decoration: none; color: var(--text); }
+    .site-title { font-family: sans-serif; font-size: 24px; font-weight: 700; }
+    .nav-links { font-family: sans-serif; font-size: 16px; }
+    .nav-links a { margin-left: 20px; color: #666; }
+    
     h1, h2, h3 { font-family: -apple-system, sans-serif; margin-top: 1.6em; }
     .meta { font-family: sans-serif; color: #666; font-size: 0.9em; margin-bottom: 20px; }
     
@@ -58,6 +73,14 @@
   </style>
 </head>
 <body>
+  <header class="site-header">
+    <a href="/" class="site-title">Haoqiang Guo</a>
+    <nav class="nav-links">
+      <a href="/#blog">Blog</a>
+      <a href="/#overview">About</a>
+    </nav>
+  </header>
+
   <article>
     <h1>LLM Inference Terminology</h1>
     <div class="meta">Published on 2026-01-19</div>
@@ -67,14 +90,10 @@
     <div class="content">
       <div class="toc">
 <ul>
-<li><a href="#llm-inference-terminology">LLM Inference Terminology</a><ul>
 <li><a href="#model-components">Model Components</a></li>
 <li><a href="#system-metrics">System Metrics</a></li>
 </ul>
-</li>
-</ul>
 </div>
-<h1 id="llm-inference-terminology">LLM Inference Terminology</h1>
 <p>A reference guide for fundamental terms used in designing and analyzing LLM inference engines.</p>
 <h2 id="model-components">Model Components</h2>
 <ul>
