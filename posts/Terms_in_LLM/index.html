@@ -316,6 +316,18 @@
     btt.onclick = function() {
       window.scrollTo({top: 0, behavior: 'smooth'});
     };
+
+    // --- HIT TRACKING SCRIPT ---
+    (async () => {
+      try {
+        const slug = "Terms_in_LLM";
+        await fetch('https://admin-proxy.9ohnny.workers.dev', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'hit-count', slug: slug })
+        });
+      } catch (e) { console.warn("Hit tracking failed"); }
+    })();
   </script>
 
   <!-- Avatar Verification Script -->
