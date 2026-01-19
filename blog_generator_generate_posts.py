@@ -57,9 +57,9 @@ TEMPLATE = '''<!doctype html>
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--border);
-      gap: 15px;
     }}
-    .header-left {{ text-decoration: none; color: var(--text); }}
+    .header-left {{ display: flex; align-items: center; gap: 15px; }}
+    .site-title-link {{ text-decoration: none; color: var(--text); }}
     .avatar {{ width: 50px; height: 50px; border-radius: 6px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }}
     .avatar img {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
     .site-title {{ font-family: sans-serif; font-size: 24px; font-weight: 700; }}
@@ -162,10 +162,12 @@ TEMPLATE = '''<!doctype html>
 </head>
 <body>
   <header class="site-header">
-    <div class="avatar avatar-blur" id="avatar-trigger"><img src="/assets/avatar.jpg" alt="Haoqiang Guo"></div>
-    <a href="/" class="header-left">
-      <span class="site-title">Haoqiang Guo</span>
-    </a>
+    <div class="header-left">
+      <div class="avatar avatar-blur" id="avatar-trigger"><img src="/assets/avatar.jpg" alt="Haoqiang Guo"></div>
+      <a href="/" class="site-title-link">
+        <span class="site-title">Haoqiang Guo</span>
+      </a>
+    </div>
     <nav class="nav-links">
       <a href="/#blog">Blog</a>
       <a href="mailto:hqguo1116@gmail.com?subject=Question regarding: {title_encoded}">Contact</a>
