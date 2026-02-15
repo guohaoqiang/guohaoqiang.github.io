@@ -35,7 +35,6 @@ TEMPLATE = '''<!doctype html>
     window.MathJax = {{ tex: {{ inlineMath: [['$', '$']], displayMath: [['$$', '$$']] }} }};
   </script>
   <link rel="icon" href="/assets/favicon.gif" type="image/gif">
-  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="/assets/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#032b56">
