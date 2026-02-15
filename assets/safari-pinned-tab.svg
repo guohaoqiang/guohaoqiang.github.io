@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Single-color icon for Safari pinned tabs -->
+  <path fill="currentColor" d="M12 8h40v48H12z" rx="6"/>
+  <text x="32" y="42" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="28">HG</text>
+</svg>

@@ -34,6 +34,12 @@ TEMPLATE = '''<!doctype html>
   <script>
     window.MathJax = {{ tex: {{ inlineMath: [['$', '$']], displayMath: [['$$', '$$']] }} }};
   </script>
+  <link rel="icon" href="/assets/favicon.gif" type="image/gif">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/assets/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="mask-icon" href="/assets/safari-pinned-tab.svg" color="#032b56">
+  <meta name="theme-color" content="#ffffff">
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
