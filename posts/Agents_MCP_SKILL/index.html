@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AI Accelerators: Meta MTIA, NVIDIA, and AMD</title>
+  <title>Agents, MCP, and Skills</title>
   
   <script>
     window.MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
@@ -181,7 +181,7 @@
     </div>
     <nav class="nav-links">
       <a href="/#blog">Blog</a>
-      <a href="mailto:hqguo1116@gmail.com?subject=Question regarding: AI%20Accelerators%3A%20Meta%20MTIA%2C%20NVIDIA%2C%20and%20AMD">Contact</a>
+      <a href="mailto:hqguo1116@gmail.com?subject=Question regarding: Agents%2C%20MCP%2C%20and%20Skills">Contact</a>
     </nav>
   </header>
 
@@ -191,9 +191,10 @@
         <b>Table of Contents</b>
         <div class="toc">
 <ul>
-<li><a href="#meta-mtia-v2-artemis">Meta MTIA V2 Artemis</a></li>
-<li><a href="#nvidia-h100">NVIDIA H100</a></li>
-<li><a href="#amd-mi350">AMD MI350</a></li>
+<li><a href="#agents">Agents</a></li>
+<li><a href="#mcp-model-connected-protocol">MCP (Model-Connected Protocol)</a></li>
+<li><a href="#skills">Skills</a></li>
+<li><a href="#example">Example</a></li>
 </ul>
 </div>
 
@@ -202,18 +203,24 @@
 
     <main>
       <article>
-        <h1>AI Accelerators: Meta MTIA, NVIDIA, and AMD</h1>
+        <h1>Agents, MCP, and Skills</h1>
         <div class="meta">Published on 2026-02-14 &bull; 1 min read</div>
-        <div class="excerpt">A comparison of modern AI accelerators and their design philosophies.</div>
+        <div class="excerpt">Agents execute instructions defined in Skills and use MCP tools to perform actions.</div>
         <div class="content">
-          <h2 id="meta-mtia-v2-artemis">Meta MTIA V2 Artemis</h2>
-<p>Meta's MTIA (Meta Training and Inference Accelerator) <a href="https://dl.acm.org/doi/full/10.1145/3695053.3731409">V2</a> is designed for Meta's specific workloads, including recommendation systems and large language models. The Artemis variant focuses on inference efficiency.</p>
-<p><strong>Key Characteristics:</strong>
-- Custom silicon tailored for Meta's infrastructure
-- Optimized for inference workloads
-- Integration with Meta's existing systems</p>
-<h2 id="nvidia-h100">NVIDIA H100</h2>
-<h2 id="amd-mi350">AMD MI350</h2>
+          <h2 id="agents">Agents</h2>
+<p>An agent (or bot) works autonomously to solve complex problems within a defined domain. Agents follow the workflows and rules specified in a Skill and call MCPs when instructed.</p>
+<h2 id="mcp-model-connected-protocol">MCP (Model-Connected Protocol)</h2>
+<p>MCPs are discrete tools or capabilities available to an agent. Each MCP defines a specific action the agent can perform — for example: fetching data, running a computation, calling an external API, or updating state.</p>
+<h2 id="skills">Skills</h2>
+<p>A Skill is a prompt-driven workflow that defines how an agent should process a larger job. It contains step-by-step procedures and guidance for the agent, and explicitly specifies when and which MCPs should be used at each step.</p>
+<h2 id="example">Example</h2>
+<ul>
+<li>Skill: "Summarize and translate a document"</li>
+<li>Step 1: Use MCP <code>fetch_document</code> to retrieve the source text.</li>
+<li>Step 2: Use MCP <code>summarize</code> to produce a concise summary.</li>
+<li>Step 3: Use MCP <code>translate</code> to convert the summary to the target language.</li>
+</ul>
+<p>This structure keeps agent behavior predictable and auditable by separating high-level workflows (Skills) from the concrete actions (MCPs) they invoke.</p>
         </div>
       </article>
     </main>
@@ -267,7 +274,7 @@
     // --- HIT TRACKING SCRIPT ---
     (async () => {
       try {
-        const slug = "Meta_MTIA_NV_AMD";
+        const slug = "Agents_MCP_SKILL";
         await fetch('https://admin-proxy.9ohnny.workers.dev', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

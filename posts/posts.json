@@ -1,14 +1,20 @@
 [
   {
     "title": "LLM Inference Terminology",
-    "date": "2026-01-19",
+    "date": "2026-02-14",
     "slug": "Terms_in_LLM",
     "excerpt": "A reference guide for fundamental terms used in designing and analyzing LLM inference engines."
   },
   {
     "title": "AI Accelerators: Meta MTIA, NVIDIA, and AMD",
-    "date": "2026-01-19",
+    "date": "2026-02-14",
     "slug": "Meta_MTIA_NV_AMD",
     "excerpt": "A comparison of modern AI accelerators and their design philosophies."
+  },
+  {
+    "title": "Agents, MCP, and Skills",
+    "date": "2026-02-14",
+    "slug": "Agents_MCP_SKILL",
+    "excerpt": "Agents execute instructions defined in Skills and use MCP tools to perform actions."
   }
 ]
