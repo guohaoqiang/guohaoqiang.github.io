@@ -245,7 +245,7 @@
       postsMeta.forEach(p=>{
         const d = document.createElement('div'); d.className='item';
         const a = document.createElement('a'); a.href = '/posts/'+p.slug+'/';
-        a.textContent = p.title + ' — ' + p.date;
+        a.textContent = p.title;
         d.appendChild(a);
         const desc = document.createElement('p'); desc.className='muted'; desc.textContent = p.excerpt || '';
         d.appendChild(desc);

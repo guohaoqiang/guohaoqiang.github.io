@@ -6,7 +6,7 @@ Agents execute instructions defined in Skills and use MCP tools to perform actio
 
 An agent (or bot) works autonomously to solve complex problems within a defined domain. Agents follow the workflows and rules specified in a Skill and call MCPs when instructed.
 
-## MCP (Model-Connected Protocol)
+## MCP (Model Context Protocol)
 
 MCPs are discrete tools or capabilities available to an agent. Each MCP defines a specific action the agent can perform — for example: fetching data, running a computation, calling an external API, or updating state.
 
