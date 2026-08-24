@@ -1,5 +1,5 @@
 // Cloudflare Worker: Avatar Verification with Email Notifications
-// This worker handles avatar verification requests and sends emails via SendGrid
+// This worker handles avatar verification requests and sends emails via Brevo
 
 // In-memory store (note: resets when worker redeploys)
 // For production, use Cloudflare KV or Durable Objects
@@ -10,29 +10,74 @@ function generateCode() {
 }
 
 async function sendEmail(to, subject, html, env) {
-  // Try to get SENDGRID_KEY from env - it should be injected as a secret
-  let SENDGRID_API_KEY = env.SENDGRID_KEY;
-  
-  console.log('sendEmail called:', { to, env_keys: Object.keys(env) });
-  console.log('SENDGRID_KEY value:', SENDGRID_API_KEY);
-  
-  if (!SENDGRID_API_KEY) {
-    // If not found, check if it's stored under a different name
-    const keys = Object.keys(env);
-    if (keys.length > 0) {
-      SENDGRID_API_KEY = env[keys[0]]; // Use the first available key
-      console.log('Using key:', keys[0]);
-    }
+  const BREVO_API_KEY = env.BREVO_API_KEY;
+  const BREVO_FROM_EMAIL = env.BREVO_FROM_EMAIL || env.SENDGRID_FROM_EMAIL || 'hectorlannister@gmail.com';
+  const BREVO_FROM_NAME = env.BREVO_FROM_NAME || 'Avatar Verification';
+
+  const SENDGRID_API_KEY = env.SENDGRID_KEY;
+
+  if (!BREVO_API_KEY && !SENDGRID_API_KEY) {
+    console.error('No email provider is configured (BREVO_API_KEY or SENDGRID_KEY)');
+    return {
+      ok: false,
+      status: 500,
+      code: 'email_not_configured',
+      error: 'Email service is not configured',
+    };
   }
-  
-  if (!SENDGRID_API_KEY) {
-    console.error('SENDGRID_KEY not configured. Available env:', Object.keys(env));
-    return false;
+
+  // Use Brevo first. Keep SendGrid as fallback during migration.
+  if (BREVO_API_KEY) {
+    try {
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': BREVO_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender: {
+            name: BREVO_FROM_NAME,
+            email: BREVO_FROM_EMAIL,
+          },
+          to: [{ email: to }],
+          subject: subject,
+          htmlContent: html,
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error('Brevo API error:', response.status, errText);
+        if (response.status === 402 || response.status === 429 || /quota|limit|credits/i.test(errText)) {
+          return {
+            ok: false,
+            status: 503,
+            code: 'email_quota_exceeded',
+            error: 'Email service quota exceeded. Please try again later.',
+          };
+        }
+        return {
+          ok: false,
+          status: response.status,
+          code: 'email_provider_error',
+          error: 'Email provider rejected the request',
+        };
+      }
+
+      return { ok: true };
+    } catch (err) {
+      console.error('Brevo error:', err);
+      return {
+        ok: false,
+        status: 502,
+        code: 'email_network_error',
+        error: 'Email service network error',
+      };
+    }
   }
 
   try {
-    const fromEmail = 'hectorlannister@gmail.com'; // Your verified sender email
-    
     const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
       headers: {
@@ -46,7 +91,7 @@ async function sendEmail(to, subject, html, env) {
             subject: subject,
           },
         ],
-        from: { email: fromEmail },
+        from: { email: BREVO_FROM_EMAIL },
         content: [
           {
             type: 'text/html',
@@ -58,14 +103,32 @@ async function sendEmail(to, subject, html, env) {
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error('SendGrid API error:', response.status, errText);
-      return false;
+      console.error('SendGrid fallback API error:', response.status, errText);
+      if (response.status === 401 && /Maximum credits exceeded/i.test(errText)) {
+        return {
+          ok: false,
+          status: 503,
+          code: 'email_quota_exceeded',
+          error: 'Email service quota exceeded. Please try again later.',
+        };
+      }
+      return {
+        ok: false,
+        status: response.status,
+        code: 'email_provider_error',
+        error: 'Email provider rejected the request',
+      };
     }
 
-    return true;
+    return { ok: true };
   } catch (err) {
-    console.error('SendGrid error:', err);
-    return false;
+    console.error('SendGrid fallback error:', err);
+    return {
+      ok: false,
+      status: 502,
+      code: 'email_network_error',
+      error: 'Email service network error',
+    };
   }
 }
 
@@ -120,11 +183,14 @@ async function handleRequest(request, env) {
         <p>If you didn't request this, you can safely ignore this email.</p>
       `;
 
-      const emailSent = await sendEmail(email, 'Your Avatar Access Code', userEmailHtml, env);
+      const emailResult = await sendEmail(email, 'Your Avatar Access Code', userEmailHtml, env);
 
-      if (!emailSent) {
-        return new Response(JSON.stringify({ error: 'Failed to send email' }), {
-          status: 500,
+      if (!emailResult.ok) {
+        return new Response(JSON.stringify({
+          error: emailResult.error || 'Failed to send email',
+          code: emailResult.code || 'email_send_failed',
+        }), {
+          status: emailResult.status || 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }

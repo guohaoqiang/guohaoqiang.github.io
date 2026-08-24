@@ -9,6 +9,11 @@ workers_dev = true
 account_id = "7ed5db77a991f01677e08d93fd670e1c"
 
 # Deployment:
-# 1. Set SENDGRID_KEY secret:
+# 1. Set Brevo secrets (recommended):
+#    wrangler secret put BREVO_API_KEY --config wrangler-avatar.toml
+#    wrangler secret put BREVO_FROM_EMAIL --config wrangler-avatar.toml
+#    wrangler secret put BREVO_FROM_NAME --config wrangler-avatar.toml
+# 2. Optional temporary fallback while migrating:
 #    wrangler secret put SENDGRID_KEY --config wrangler-avatar.toml
-# 2. Deploy: `wrangler deploy --config wrangler-avatar.toml`
+#    wrangler secret put SENDGRID_FROM_EMAIL --config wrangler-avatar.toml
+# 3. Deploy: wrangler deploy --config wrangler-avatar.toml
