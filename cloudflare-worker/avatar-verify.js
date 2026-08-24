@@ -1,12 +1,48 @@
 // Cloudflare Worker: Avatar Verification with Email Notifications
 // This worker handles avatar verification requests and sends emails via Brevo
 
-// In-memory store (note: resets when worker redeploys)
-// For production, use Cloudflare KV or Durable Objects
+// In-memory fallback store.
+// Primary storage should be Cloudflare KV via VERIFICATION_KV binding.
 let verificationStore = {};
 
 function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function verificationKey(email) {
+  return `verify:${String(email || '').trim().toLowerCase()}`;
+}
+
+async function saveVerification(env, email, record) {
+  const key = verificationKey(email);
+  if (env.VERIFICATION_KV && typeof env.VERIFICATION_KV.put === 'function') {
+    await env.VERIFICATION_KV.put(key, JSON.stringify(record), { expirationTtl: 11 * 60 });
+    return;
+  }
+  verificationStore[email] = record;
+}
+
+async function loadVerification(env, email) {
+  const key = verificationKey(email);
+  if (env.VERIFICATION_KV && typeof env.VERIFICATION_KV.get === 'function') {
+    const raw = await env.VERIFICATION_KV.get(key);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch (_) {
+      return null;
+    }
+  }
+  return verificationStore[email] || null;
+}
+
+async function deleteVerification(env, email) {
+  const key = verificationKey(email);
+  if (env.VERIFICATION_KV && typeof env.VERIFICATION_KV.delete === 'function') {
+    await env.VERIFICATION_KV.delete(key);
+    return;
+  }
+  delete verificationStore[email];
 }
 
 async function sendEmail(to, subject, html, env) {
@@ -168,11 +204,24 @@ async function handleRequest(request, env) {
       const verificationCode = generateCode();
       const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-      verificationStore[email] = {
+      const verificationRecord = {
         code: verificationCode,
         expiresAt,
         verified: false,
       };
+
+      try {
+        await saveVerification(env, email, verificationRecord);
+      } catch (storeErr) {
+        console.error('Failed to store verification record:', storeErr);
+        return new Response(JSON.stringify({
+          error: 'Verification storage unavailable',
+          code: 'storage_unavailable',
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
       // Send verification email to user
       const userEmailHtml = `
@@ -209,7 +258,7 @@ async function handleRequest(request, env) {
         });
       }
 
-      const stored = verificationStore[email];
+      const stored = await loadVerification(env, email);
 
       if (!stored) {
         return new Response(JSON.stringify({ error: 'No code found' }), {
@@ -219,7 +268,7 @@ async function handleRequest(request, env) {
       }
 
       if (Date.now() > stored.expiresAt) {
-        delete verificationStore[email];
+        await deleteVerification(env, email);
         return new Response(JSON.stringify({ error: 'Code expired' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -232,6 +281,8 @@ async function handleRequest(request, env) {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+
+      await deleteVerification(env, email);
 
       // Code verified! Send notification to admin
       const adminEmailHtml = `

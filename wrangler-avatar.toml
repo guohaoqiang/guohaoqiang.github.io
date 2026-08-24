@@ -8,6 +8,10 @@ workers_dev = true
 
 account_id = "7ed5db77a991f01677e08d93fd670e1c"
 
+[[kv_namespaces]]
+binding = "VERIFICATION_KV"
+id = "b636fed63fe342d7b4c38e4cee7014ca"
+
 # Deployment:
 # 1. Set Brevo secrets (recommended):
 #    wrangler secret put BREVO_API_KEY --config wrangler-avatar.toml
@@ -17,3 +21,7 @@ account_id = "7ed5db77a991f01677e08d93fd670e1c"
 #    wrangler secret put SENDGRID_KEY --config wrangler-avatar.toml
 #    wrangler secret put SENDGRID_FROM_EMAIL --config wrangler-avatar.toml
 # 3. Deploy: wrangler deploy --config wrangler-avatar.toml
+#
+# Verification-code persistence:
+# - This worker uses VERIFICATION_KV to persist request-code state between
+#   request-code and verify-code calls.
